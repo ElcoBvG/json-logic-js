@@ -3,22 +3,22 @@
 Using a Universal Module Loader that should be browser, require, and AMD friendly
 http://ricostacruz.com/cheatsheets/umdjs.html
 */
-;(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define(factory);
-  } else if (typeof exports === "object") {
-    module.exports = factory();
+;(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define(factory)
+  } else if (typeof exports === 'object') {
+    module.exports = factory()
   } else {
-    root.jsonLogic = factory();
+    root.jsonLogic = factory()
   }
-}(this, function() {
-  "use strict";
+}(this, function () {
+  'use strict'
   /* globals console:false */
 
-  if ( ! Array.isArray) {
-    Array.isArray = function(arg) {
-      return Object.prototype.toString.call(arg) === "[object Array]";
-    };
+  if (!Array.isArray) {
+    Array.isArray = function (arg) {
+      return Object.prototype.toString.call(arg) === '[object Array]'
+    }
   }
 
   /**
@@ -26,109 +26,128 @@ http://ricostacruz.com/cheatsheets/umdjs.html
    * @param  {array} array   Original reference array
    * @return {array}         New array with no duplicates
    */
-  function arrayUnique(array) {
-    var a = [];
-    for (var i=0, l=array.length; i<l; i++) {
+  function arrayUnique (array) {
+    var a = []
+    for (var i = 0, l = array.length; i < l; i++) {
       if (a.indexOf(array[i]) === -1) {
-        a.push(array[i]);
+        a.push(array[i])
       }
     }
-    return a;
+    return a
   }
 
-  var jsonLogic = {};
+  var jsonLogic = {}
   var operations = {
-    "==": function(a, b) {
-      return a == b;
+    '==': function (a, b) {
+      if (a == b) {
+        return true
+      }
+      return jsonLogic.fail('==', a, b)
     },
-    "===": function(a, b) {
-      return a === b;
+    '===': function (a, b) {
+      return a === b
     },
-    "!=": function(a, b) {
-      return a != b;
+    '!=': function (a, b) {
+      return a != b
     },
-    "!==": function(a, b) {
-      return a !== b;
+    '!==': function (a, b) {
+      return a !== b
     },
-    ">": function(a, b) {
-      return a > b;
+    '>': function (a, b) {
+      if (a > b) {
+        return true
+      }
+      return jsonLogic.fail('>', a, b)
     },
-    ">=": function(a, b) {
-      return a >= b;
+    '>=': function (a, b) {
+      return a >= b
     },
-    "<": function(a, b, c) {
-      return (c === undefined) ? a < b : (a < b) && (b < c);
+    '<': function (a, b, c) {
+      if (c === undefined) {
+        if (a < b) {
+          return true
+        }
+        return jsonLogic.fail('<', a, b)
+      } else {
+        if ((a < b) && (b < c)) {
+          return true
+        }
+        return jsonLogic.fail('<', a, b, c)
+      }
+      // return (c === undefined) ? a < b : (a < b) && (b < c);
     },
-    "<=": function(a, b, c) {
-      return (c === undefined) ? a <= b : (a <= b) && (b <= c);
+    '<=': function (a, b, c) {
+      return (c === undefined) ? a <= b : (a <= b) && (b <= c)
     },
-    "!!": function(a) {
-      return jsonLogic.truthy(a);
+    '!!': function (a) {
+      return jsonLogic.truthy(a)
     },
-    "!": function(a) {
-      return !jsonLogic.truthy(a);
+    '!': function (a) {
+      return !jsonLogic.truthy(a)
     },
-    "%": function(a, b) {
-      return a % b;
+    '%': function (a, b) {
+      return a % b
     },
-    "log": function(a) {
-      console.log(a); return a;
+    'log': function (a) {
+      console.log(a); return a
     },
-    "in": function(a, b) {
-      if(typeof b.indexOf === "undefined") return false;
-      return (b.indexOf(a) !== -1);
+    'in': function (a, b) {
+      if (typeof b.indexOf === 'undefined') return false
+      return (b.indexOf(a) !== -1)
     },
-    "cat": function() {
-      return Array.prototype.join.call(arguments, "");
+    'cat': function () {
+      return Array.prototype.join.call(arguments, '')
     },
-    "+": function() {
-      return Array.prototype.reduce.call(arguments, function(a, b) {
-        return parseFloat(a, 10) + parseFloat(b, 10);
-      }, 0);
+    '+': function () {
+      return Array.prototype.reduce.call(arguments, function (a, b) {
+        return parseFloat(a, 10) + parseFloat(b, 10)
+      }, 0)
     },
-    "*": function() {
-      return Array.prototype.reduce.call(arguments, function(a, b) {
-        return parseFloat(a, 10) * parseFloat(b, 10);
-      });
+    '*': function () {
+      return Array.prototype.reduce.call(arguments, function (a, b) {
+        return parseFloat(a, 10) * parseFloat(b, 10)
+      })
     },
-    "-": function(a, b) {
-      if(b === undefined) {
-        return -a;
-      }else{
-        return a - b;
+    '-': function (a, b) {
+      if (b === undefined) {
+        return -a
+      } else {
+        return a - b
       }
     },
-    "/": function(a, b) {
-      return a / b;
+    '/': function (a, b) {
+      return a / b
     },
-    "min": function() {
-      return Math.min.apply(this, arguments);
+    'min': function () {
+      return Math.min.apply(this, arguments)
     },
-    "max": function() {
-      return Math.max.apply(this, arguments);
+    'max': function () {
+      return Math.max.apply(this, arguments)
     },
-    "merge": function() {
-      return Array.prototype.reduce.call(arguments, function(a, b) {
-        return a.concat(b);
-      }, []);
+    'merge': function () {
+      return Array.prototype.reduce.call(arguments, function (a, b) {
+        return a.concat(b)
+      }, [])
     },
-    "var": function(a, b) {
-      var not_found = (b === undefined) ? null : b;
-      var sub_props = String(a).split(".");
-      var data = this;
-      for(var i = 0; i < sub_props.length; i++) {
-        if(data === null) {
-          return not_found;
+    'var': function (a, b) {
+      jsonLogic.currentVar = a
+      jsonLogic.currentRuleNumber--  // var is inline, so decrease 'line' number
+      var not_found = (b === undefined) ? null : b
+      var sub_props = String(a).split('.')
+      var data = this
+      for (var i = 0; i < sub_props.length; i++) {
+        if (data === null) {
+          return not_found
         }
         // Descending into data
-        data = data[sub_props[i]];
-        if(data === undefined) {
-          return not_found;
+        data = data[sub_props[i]]
+        if (data === undefined) {
+          return not_found
         }
       }
-      return data;
+      return data
     },
-    "missing": function() {
+    'missing': function () {
       /*
       Missing can receive many keys as many arguments, like {"missing:[1,2]}
       Missing can also receive *one* argument that is an array of keys,
@@ -136,91 +155,106 @@ http://ricostacruz.com/cheatsheets/umdjs.html
       (like 'if' or 'merge')
       */
 
-      var missing = [];
-      var keys = Array.isArray(arguments[0]) ? arguments[0] : arguments;
+      var missing = []
+      var keys = Array.isArray(arguments[0]) ? arguments[0] : arguments
 
-      for(var i = 0; i < keys.length; i++) {
-        var key = keys[i];
-        var value = jsonLogic.apply({"var": key}, this);
-        if(value === null || value === "") {
-          missing.push(key);
+      for (var i = 0; i < keys.length; i++) {
+        var key = keys[i]
+        var value = jsonLogic.apply({'var': key}, this)
+        if (value === null || value === '') {
+          missing.push(key)
         }
       }
 
-      return missing;
+      return missing
     },
-    "missing_some": function(need_count, options) {
-      // missing_some takes two arguments, how many (minimum) items must be present, and an array of keys (just like 'missing') to check for presence.
-      var are_missing = jsonLogic.apply({"missing": options}, this);
+    'missing_some': function (need_count, options) {
+      // missing_some takes two arguments, how many (minimum) items must be present, and an array of keys
+      // (just like 'missing') to check for presence.
+      var are_missing = jsonLogic.apply({'missing': options}, this)
 
-      if(options.length - are_missing.length >= need_count) {
-        return [];
-      }else{
-        return are_missing;
+      if (options.length - are_missing.length >= need_count) {
+        return []
+      } else {
+        return are_missing
       }
     },
-    "method": function(obj, method, args) {
-      return obj[method].apply(obj, args);
+    'method': function (obj, method, args) {
+      return obj[method].apply(obj, args)
     },
 
-  };
+    // Corny comments
+    '//': function () {
+      return null
+    },
+    '#': function () {
+      return null
+    }
+  }
 
-  jsonLogic.is_logic = function(logic) {
+  jsonLogic.is_logic = function (logic) {
     return (
-      logic !== null && typeof logic === "object" && ! Array.isArray(logic)
-    );
-  };
+      logic !== null && typeof logic === 'object' && !Array.isArray(logic)
+    )
+  }
 
   /*
-  This helper will defer to the JsonLogic spec as a tie-breaker when different language interpreters define different behavior for the truthiness of primitives.  E.g., PHP considers empty arrays to be falsy, but Javascript considers them to be truthy. JsonLogic, as an ecosystem, needs one consistent answer.
+  This helper will defer to the JsonLogic spec as a tie-breaker when different language interpreters define
+  different behavior for the truthiness of primitives.  E.g., PHP considers empty arrays to be falsy,
+  but Javascript considers them to be truthy. JsonLogic, as an ecosystem, needs one consistent answer.
 
   Literal | JS    |  PHP  |  JsonLogic
   --------+-------+-------+---------------
   []      | true  | false | false
   "0"     | true  | false | true
   */
-  jsonLogic.truthy = function(value) {
-    if(Array.isArray(value) && value.length === 0) {
-      return false;
+  jsonLogic.truthy = function (value) {
+    if (Array.isArray(value) && value.length === 0) {
+      return false
     }
-    return !! value;
-  };
+    return !!value
+  }
 
+  jsonLogic.get_operator = function (logic) {
+    return Object.keys(logic)[0]
+  }
 
-  jsonLogic.get_operator = function(logic) {
-    return Object.keys(logic)[0];
-  };
+  jsonLogic.get_values = function (logic) {
+    return logic[jsonLogic.get_operator(logic)]
+  }
 
-  jsonLogic.get_values = function(logic) {
-    return logic[jsonLogic.get_operator(logic)];
-  };
-
-  jsonLogic.apply = function(logic, data) {
+  jsonLogic.apply = function (logic, data) {
     // Does this array contain logic? Only one way to find out.
-    if(Array.isArray(logic)) {
-      return logic.map(function(l) {
-        return jsonLogic.apply(l, data);
-      });
+    if (Array.isArray(logic)) {
+      return logic.map(function (l) {
+        return jsonLogic.apply(l, data)
+      })
     }
     // You've recursed to a primitive, stop!
-    if( ! jsonLogic.is_logic(logic) ) {
-      return logic;
+    if (!jsonLogic.is_logic(logic)) {
+      return logic
     }
 
-    data = data || {};
+    data = data || {}
 
-    var op = jsonLogic.get_operator(logic);
-    var values = logic[op];
-    var i;
-    var current;
+    var op = jsonLogic.get_operator(logic)
+    var values = logic[op]
+    var i
+    var current
+    var first
+    var last
 
     // easy syntax for unary operators, like {"var" : "x"} instead of strict {"var" : ["x"]}
-    if( ! Array.isArray(values)) {
-      values = [values];
+    if (!Array.isArray(values)) {
+      values = [values]
     }
 
-    // 'if', 'and', and 'or' violate the normal rule of depth-first calculating consequents, let each manage recursion as needed.
-    if(op === "if" || op == "?:") {
+    // We have a rule, so update 'line' number
+    jsonLogic.currentRuleNumber++
+
+    // 'if', 'and', and 'or' violate the normal rule of depth-first calculating consequents,
+    // let each manage recursion as needed.
+    if (op === 'if' || op == '?:') {
       /* 'if' should be called with a odd number of parameters, 3 or greater
       This works on the pattern:
       if( 0 ){ 1 }else{ 2 };
@@ -234,152 +268,188 @@ http://ricostacruz.com/cheatsheets/umdjs.html
       given one parameter, evaluate and return it. (it's an Else and all the If/ElseIf were false)
       given 0 parameters, return NULL (not great practice, but there was no Else)
       */
-      for(i = 0; i < values.length - 1; i += 2) {
-        if( jsonLogic.truthy( jsonLogic.apply(values[i], data) ) ) {
-          return jsonLogic.apply(values[i+1], data);
+      for (i = 0; i < values.length - 1; i += 2) {
+        if (jsonLogic.truthy(jsonLogic.apply(values[i], data))) {
+          return jsonLogic.apply(values[i + 1], data)
         }
       }
-      if(values.length === i+1) return jsonLogic.apply(values[i], data);
-      return null;
-    }else if(op === "and") { // Return first falsy, or last
-      for(i=0; i < values.length; i+=1) {
-        current = jsonLogic.apply(values[i], data);
-        if( ! jsonLogic.truthy(current)) {
-          return current;
-        }
+      if (values.length === i + 1) return jsonLogic.apply(values[i], data)
+      return null
+    } else if (op === 'xor') {
+      // Only two expressions allowed
+      if (values.length > 2) {
+        return false
       }
-      return current; // Last
-    }else if(op === "or") {// Return first truthy, or last
-      for(i=0; i < values.length; i+=1) {
-        current = jsonLogic.apply(values[i], data);
-        if( jsonLogic.truthy(current) ) {
-          return current;
-        }
-      }
-      return current; // Last
-    }
+      first = jsonLogic.apply(values[0], data)
+      last = jsonLogic.apply(values[1], data)
 
+      if (jsonLogic.truthy(first) && !jsonLogic.truthy(last)) {
+        return first
+      } else if (jsonLogic.truthy(last) && !jsonLogic.truthy(first)) {
+        return last
+      }
+      return false // Fail
+    } else if (op === 'and') { // Return first falsy, or last
+      for (i = 0; i < values.length; i += 1) {
+        current = jsonLogic.apply(values[i], data)
+        if (!jsonLogic.truthy(current)) {
+          return current
+        }
+      }
+      return current // Last
+    } else if (op === 'or') { // Return first truthy, or last
+      for (i = 0; i < values.length; i += 1) {
+        current = jsonLogic.apply(values[i], data)
+        if (jsonLogic.truthy(current)) {
+          return current
+        }
+      }
+      return current // Last
+    }
 
     // Everyone else gets immediate depth-first recursion
-    values = values.map(function(val) {
-      return jsonLogic.apply(val, data);
-    });
-
+    values = values.map(function (val) {
+      return jsonLogic.apply(val, data)
+    })
 
     // The operation is called with "data" bound to its "this" and "values" passed as arguments.
-    // Structured commands like % or > can name formal arguments while flexible commands (like missing or merge) can operate on the pseudo-array arguments
+    // Structured commands like % or > can name formal arguments while flexible commands (like missing or merge)
+    // can operate on the pseudo-array arguments
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/arguments
-    if(typeof operations[op] === "function") {
-      return operations[op].apply(data, values);
-    }else if(op.indexOf(".") > 0) { // Contains a dot, and not in the 0th position
-      var sub_ops = String(op).split(".");
-      var operation = operations;
-      for(i = 0; i < sub_ops.length; i++) {
+    if (typeof operations[op] === 'function') {
+      return operations[op].apply(data, values)
+    } else if (op.indexOf('.') > 0) { // Contains a dot, and not in the 0th position
+      var sub_ops = String(op).split('.')
+      var operation = operations
+      for (i = 0; i < sub_ops.length; i++) {
         // Descending into operations
-        operation = operation[sub_ops[i]];
-        if(operation === undefined) {
-          throw new Error("Unrecognized operation " + op +
-          " (failed at " + sub_ops.slice(0, i+1).join(".") + ")");
+        operation = operation[sub_ops[i]]
+        if (operation === undefined) {
+          throw new Error('Unrecognized operation ' + op +
+          ' (failed at ' + sub_ops.slice(0, i + 1).join('.') + ')')
         }
       }
 
-      return operation.apply(data, values);
+      return operation.apply(data, values)
     }
 
-    throw new Error("Unrecognized operation " + op );
-  };
+    throw new Error('Unrecognized operation ' + op)
+  }
 
-  jsonLogic.uses_data = function(logic) {
-    var collection = [];
+  jsonLogic.uses_data = function (logic) {
+    var collection = []
 
-    if( jsonLogic.is_logic(logic) ) {
-      var op = jsonLogic.get_operator(logic);
-      var values = logic[op];
+    if (jsonLogic.is_logic(logic)) {
+      var op = jsonLogic.get_operator(logic)
+      var values = logic[op]
 
-      if( ! Array.isArray(values)) {
-        values = [values];
+      if (!Array.isArray(values)) {
+        values = [values]
       }
 
-      if(op === "var") {
+      if (op === 'var') {
         // This doesn't cover the case where the arg to var is itself a rule.
-        collection.push(values[0]);
-      }else{
+        collection.push(values[0])
+      } else {
         // Recursion!
-        values.map(function(val) {
-          collection.push.apply(collection, jsonLogic.uses_data(val) );
-        });
+        values.map(function (val) {
+          collection.push.apply(collection, jsonLogic.uses_data(val))
+        })
       }
     }
 
-    return arrayUnique(collection);
-  };
+    return arrayUnique(collection)
+  }
 
-  jsonLogic.add_operation = function(name, code) {
-    operations[name] = code;
-  };
+  jsonLogic.add_operation = function (name, code) {
+    operations[name] = code
+  }
 
-  jsonLogic.rm_operation = function(name) {
-    delete operations[name];
-  };
+  jsonLogic.rm_operation = function (name) {
+    delete operations[name]
+  }
 
-  jsonLogic.rule_like = function(rule, pattern) {
+  jsonLogic.rule_like = function (rule, pattern) {
     // console.log("Is ". JSON.stringify(rule) . " like " . JSON.stringify(pattern) . "?");
-    if(pattern === rule) {
-      return true;
+    if (pattern === rule) {
+      return true
     } // TODO : Deep object equivalency?
-    if(pattern === "@") {
-      return true;
+    if (pattern === '@') {
+      return true
     } // Wildcard!
-    if(pattern === "number") {
-      return (typeof rule === "number");
+    if (pattern === 'number') {
+      return (typeof rule === 'number')
     }
-    if(pattern === "string") {
-      return (typeof rule === "string");
+    if (pattern === 'string') {
+      return (typeof rule === 'string')
     }
-    if(pattern === "array") {
+    if (pattern === 'array') {
       // !logic test might be superfluous in JavaScript
-      return Array.isArray(rule) && ! jsonLogic.is_logic(rule);
+      return Array.isArray(rule) && !jsonLogic.is_logic(rule)
     }
 
-    if(jsonLogic.is_logic(pattern)) {
-      if(jsonLogic.is_logic(rule)) {
-        var pattern_op = jsonLogic.get_operator(pattern);
-        var rule_op = jsonLogic.get_operator(rule);
+    if (jsonLogic.is_logic(pattern)) {
+      if (jsonLogic.is_logic(rule)) {
+        var pattern_op = jsonLogic.get_operator(pattern)
+        var rule_op = jsonLogic.get_operator(rule)
 
-        if(pattern_op === "@" || pattern_op === rule_op) {
+        if (pattern_op === '@' || pattern_op === rule_op) {
         // echo "\nOperators match, go deeper\n";
           return jsonLogic.rule_like(
             jsonLogic.get_values(rule, false),
             jsonLogic.get_values(pattern, false)
-          );
+          )
         }
       }
-      return false; // pattern is logic, rule isn't, can't be eq
+      return false // pattern is logic, rule isn't, can't be eq
     }
 
-    if(Array.isArray(pattern)) {
-      if(Array.isArray(rule)) {
-        if(pattern.length !== rule.length) {
-          return false;
+    if (Array.isArray(pattern)) {
+      if (Array.isArray(rule)) {
+        if (pattern.length !== rule.length) {
+          return false
         }
         /*
-          Note, array order MATTERS, because we're using this array test logic to consider arguments, where order can matter. (e.g., + is commutative, but '-' or 'if' or 'var' are NOT)
+          Note, array order MATTERS, because we're using this array test logic to consider arguments,
+          where order can matter. (e.g., + is commutative, but '-' or 'if' or 'var' are NOT)
         */
-        for(var i = 0; i < pattern.length; i += 1) {
+        for (var i = 0; i < pattern.length; i += 1) {
           // If any fail, we fail
-          if( ! jsonLogic.rule_like(rule[i], pattern[i])) {
-            return false;
+          if (!jsonLogic.rule_like(rule[i], pattern[i])) {
+            return false
           }
         }
-        return true; // If they *all* passed, we pass
-      }else{
-        return false; // Pattern is array, rule isn't
+        return true // If they *all* passed, we pass
+      } else {
+        return false // Pattern is array, rule isn't
       }
     }
 
     // Not logic, not array, not a === match for rule.
-    return false;
-  };
+    return false
+  }
 
-  return jsonLogic;
-}));
+  // Trace failed rules
+  jsonLogic.trace = []
+  jsonLogic.currentVar = null
+  jsonLogic.currentRuleNumber = 0
+
+  jsonLogic.fail = function (operator, actual, shouldbe) {
+    operator = ' ' + operator + ' '
+    var msg = jsonLogic.currentRuleNumber + ". '" + jsonLogic.currentVar +
+            operator + shouldbe + "' : " + actual
+    jsonLogic.trace.push(msg)
+    return false
+  }
+
+  jsonLogic.logTrace = function () {
+    var fails = ['FAILED RULES']
+    fails.push(jsonLogic.trace)
+    jsonLogic.trace = []
+    jsonLogic.currentVar = null
+    jsonLogic.currentRuleNumber = 0
+    return fails
+  }
+
+  return jsonLogic
+}))
