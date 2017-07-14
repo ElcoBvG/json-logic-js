@@ -384,11 +384,8 @@ http://ricostacruz.com/cheatsheets/umdjs.html
     // can operate on the pseudo-array arguments
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/arguments
     if (typeof operations[op] === "function") {
-      var result = operations[op].apply(data, values);
-      if (!result) {
-        jsonLogic.fail(op, values);
-      }
-      return result;
+      // log rule if failed
+      return operations[op].apply(data, values) || jsonLogic.fail(op, values);
     } else if (op.indexOf(".") > 0) { // Contains a dot, and not in the 0th position
       var sub_ops = String(op).split(".");
       var operation = operations;
